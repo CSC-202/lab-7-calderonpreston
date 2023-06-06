@@ -2,8 +2,12 @@
 ## author - nick s.
 ### get huffman to work first here, then make it into a function for the analysis
 
+
+
+
+
 # the input, what we want to encode
-message: str = 'Hello there'
+message: str = "hello there"
 
 # the output, should be all 0's and 1s
 result: str = str()
@@ -23,29 +27,53 @@ coding: dict = dict()   # key  -> a letter
 # STEP 0 - TODO
 ## defining our data structures
 class Node: # NOT given to students
-    # TODO
+    letter: str
+    left: any
+    right: any
+    weight: int
     
-    def __init__(self):
-        return
+    def __init__(self, letter, left, right, weight):
+        self.letter = letter
+        self.left = left
+        self.right = right
+        self.weight = weight
+
+class Tree:
+    root: any
+
+    def __init__(self, root):
+        self.root = root
+
+
+
 
 ## defining operations
 ### recursively traverses the huffman tree to record the codes
 def retrieve_codes(v: Node, path: str=''):
     global coding
-    if v.letter != None: # if 'TODO': # TODO
-        coding[v.letter] = None # TODO
+    if v.letter != None: 
+        coding[v.letter] = path
     else:
-        retrieve_codes(None, None) # TODO
-        retrieve_codes(None, None) # TODO
+        retrieve_codes(v.left, path + '0') 
+        retrieve_codes(v.right, path + '1') 
+        
 
 # STEP 1
 ## counting the frequencies - TODO
+for letter in message:
+    if letter not in freq.keys():
+        freq[letter] = 1
+    else:
+        freq[letter] += 1
+for letter, count in freq.items():
+    print(f'{letter} => {count} times')
 
 
 # STEP 2
 ## initialize the nodes - TODO
-nodes = list()
-nodes.append(Node(0, 'a'))
+
+for letter in freq:
+    nodes.append(Node(letter, None, None, freq[letter]))
 
 # STEP 3 - TODO
 ## combine each nodes until there's only one item in the nodes list
@@ -60,7 +88,7 @@ while len(nodes) > 1:
     min_b: Node = nodes.pop()
 
     ## combine the two
-    combined: Node = None # TODO
+    combined: Node = Node(letter = None, left = min_a, right = min_b, weight = min_a.weight + min_b.weight)
 
     ## put the combined nodes back in the list of nodes
     nodes.append(combined)
@@ -70,6 +98,10 @@ while len(nodes) > 1:
 huff_root = nodes[0]
 retrieve_codes(huff_root)
 result: str = str() # TODO (hint coding[letter] -> code)
+
+for letter in message:
+    code: str = coding[letter]
+    result = result + code
 
 # STEP 5
 ## analyize compression performance

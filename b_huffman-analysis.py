@@ -3,7 +3,7 @@
 ### get huffman.py working first, then work on this file
 
 import matplotlib.pyplot as plt
-
+import numpy as np
 # DATA - lyrics
 POKEMON_LYRICS = 'I wanna be the very best. Like no one ever was. To catch them is my real test. To train them is my cause. I will travel across the land. Searching far and wide. Each Pokemon to understand. The power that\'s inside. (Pokemon, gotta catch \'em all.) Its you and me. I know it\'s my destiny. (Pokemon.) Oh, you\'re my best friend. In a world we must defend. (Pokemon, gotta catch \'em all.) A heart so true. Our courage will pull us through. You teach me and I\'ll teach you. Pokemon. (gotta catch \'em all.) Gotta catch \'em all. Yeah. Every challenge along the way. With courage I will face. I will battle every day. To claim my rightful place. Come with me, the time is right. There\'s no better team. Arm in arm we\'ll win the fight. It\'s always been our dream. (Pokemon, gotta catch \'em all.) Its you and me. I know it\'s my destiny (Pokemon.) Oh, you\'re my best friend. In a world we must defend. (Pokemon, gotta catch \'em all.) A heart so true. Our courage will pull us through. You teach me and I\'ll teach you. Pokemon (gotta catch \'em all.) Gotta catch \'em all. Gotta catch \'em all. Gotta catch \'em all. Gotta catch \'em all. Yeah! (Pokemon, gotta catch \'em all). Its you and me. I know it\'s my destiny. (Pokemon) Oh, you\'re my best friend. In a world we must defend. (Pokemon, gotta catch \'em all.) A heart so true. Our courage will pull us through. You teach me and I\'ll teach you Pokemon. (gotta catch \'em all). Gotta catch \'em all. (Pokemon)'
 JIGGLE_JIGGLE = 'You have to have something that sticks. You have to have something that\'s monumental. When you walk out on stage, that\'s been monumental. (Jiggle, jiggle) Can you remember any of the rap that you did? My money don\'t jiggle, jiggle, it folds. I like to see you wiggle, wiggle, for sure. It makes me want to dribble, dribble, you know. Riding in my Fiat, you really have to see it. Six feet two in a compact, no slack. But luckily the seats go back. I got a knack to relax in my mind. Sipping some red, red wine. I sip booze from chalices, holding my palaces. Crib is so crampy suckers suffer from paralysis. Rhymes, I write them in the castle. You try to diss me and pretty soon your ass. Will squat in a cell \'cause I can tell you it\'s illegal. Treason, that\'s the reason I\'m regal. You do the time for the crime of lèse-majesté. And **** the police \'cause they can\'t arrest me. (They can\'t arrest me, they can\'t arrest me). (I like to see you wiggle, it makes me dribble, fancy a fiddle?). My money don\'t jiggle, jiggle, it folds. I like to see you wiggle, wiggle, for sure. It makes me want to dribble, dribble, you know. Riding in my Fiat, you really have to see it. Six feet two in a compact, no slack. But luckily the seats go back. I got a knack to relax in my mind. Sipping some red, red wine. (I like to see you wiggle, it makes me dribble, fancy a fiddle?). (I like to see you wiggle, it makes me dribble, fancy a fiddle?). (I like to see you wiggle, it makes me dribble, fancy a fiddle?). (I like to see you wiggle, it makes me dribble, fancy a fiddle?)'
@@ -14,8 +14,15 @@ GREEN_LATTERN = 'In brightest day, in blackest night, No evil shall escape my si
 JEDI_CODE = 'Emotion, yet peace. Ignorance, yet knowledge. Passion, yet serenity. Chaos, yet harmony. Death, yet the Force.'
 SITH_CODE = 'Peace is a lie. There is only Passion. Through Passion, I gain Strength. Through Strength, I gain Power. Through Power, I gain Victory. Through Victory my chains are Broken. The Force shall free me.'
 
+
+
+# the output, should be all 0's and 1s
+
+    # for storing the code for each letter
+
 # the input, what we want to encode
 def huffman(message:str) -> float:
+
     message = message.upper()
 
     # the output, should be all 0's and 1s
@@ -35,48 +42,121 @@ def huffman(message:str) -> float:
 
     # STEP 0
     ## defining our data structures
+    class Node: # NOT given to students
+        letter: str
+        left: any
+        right: any
+        weight: int
+        
+        def __init__(self, letter, left, right, weight):
+            self.letter = letter
+            self.left = left
+            self.right = right
+            self.weight = weight
+
+    class Tree:
+        root: any
+
+        def __init__(self, root):
+            self.root = root
+
+
+
+
     ## defining operations
+    ### recursively traverses the huffman tree to record the codes
+
+    def retrieve_codes(v: Node, path: str=''):
+        
+        if v.letter != None: 
+            coding[v.letter] = path
+        else:
+            retrieve_codes(v.left, path + '0') 
+            retrieve_codes(v.right, path + '1') 
+            
 
     # STEP 1
-    ## counting the frequencies
+    ## counting the frequencies - TODO
+    for letter in message:
+        if letter not in freq.keys():
+            freq[letter] = 1
+        else:
+            freq[letter] += 1
+    for letter, count in freq.items():
+        print(f'{letter} => {count} times')
+
 
     # STEP 2
-    ## initialize the nodes
+    ## initialize the nodes - TODO
 
-    # STEP 3
+    for letter in freq:
+        nodes.append(Node(letter, None, None, freq[letter]))
+
+    # STEP 3 - TODO
     ## combine each nodes until there's only one item in the nodes list
+    while len(nodes) > 1:
+        ## sort based on weight
+        nodes.sort(key=lambda x: x.weight, reverse=True)
+
+        ## get the first min
+        min_a: Node = nodes.pop()
+
+        ## get the second min
+        min_b: Node = nodes.pop()
+
+        ## combine the two
+        combined: Node = Node(letter = None, left = min_a, right = min_b, weight = min_a.weight + min_b.weight)
+
+        ## put the combined nodes back in the list of nodes
+        nodes.append(combined)
 
     # STEP 4
     ## reconstruct the codes
+    huff_root = nodes[0]
+    retrieve_codes(huff_root)
+    result: str = str() # TODO (hint coding[letter] -> code)
+
+    for letter in message:
+        print(message)
+        code: str = coding[letter]
+        result = result + code
 
     # STEP 5
     ## analyize compression performance
     n_original_bits: int = len(message) * 8
     n_encoded_bits: int = len(result)
-    compression_ratio: float = 1 - (n_encoded_bits / n_original_bits)
+    compression_ratio: float = (1 - n_encoded_bits / n_original_bits) * 100
 
     return result, coding, compression_ratio
-
 # LYRICS
-plt.subplot(2, 1, 1)
-plt.suptitle('Lab 7 - Stapleton Analyzing Huffman')
+
+
+
 
 MAX_N: int = int(128 * 3 / 2)
 
 # PLOT 1
+
+
+plt.suptitle("Lab 7 - Calderon Analyzing Huffmann")
+plt.subplot(2, 1, 1)
 ## POKEMON
 ratios: list = list()
 for i in range(1, MAX_N):
     sub_message = POKEMON_LYRICS[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
-
-## JIGGLE JIGGLE
+plt.plot([i/100 for i in ratios], label = "Pokemon", color = "red", linestyle = "dashdot")
+plt.legend()
+## JIGGLE JIGGLE, 
 ratios: list = list()
 for i in range(1, MAX_N):
     sub_message = JIGGLE_JIGGLE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+plt.plot([i/100 for i in ratios], label = "Jiggle Jiggle", color = "green", linestyle = "dashdot")
+plt.legend()
+
 
 ## ALPHABET
 ratios: list = list()
@@ -84,8 +164,13 @@ for i in range(1, MAX_N):
     sub_message = ALPHABET[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+plt.plot([i/100 for i in ratios], label = "Alphabet", color = "blue", linestyle = "dashdot")
+plt.legend()
 
+plt.xticks(np.arange(0, 200+1, 25))
+plt.ylim(.4,1)
 # PLOT 2
+plt.ylabel("compression %")
 plt.subplot(2, 1, 2)
 
 ## SITH CODE
@@ -94,17 +179,28 @@ for i in range(1, MAX_N):
     sub_message = SITH_CODE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
-
+plt.plot([i/100 for i in ratios], label = "Sith Code", color = "red", linestyle = "dashdot")
+plt.legend()
 ## GREEN LATERN'S OATH
 ratios: list = list()
 for i in range(1, MAX_N):
     sub_message = GREEN_LATTERN[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
-
+plt.plot([i/100 for i in ratios], label = "Green Lantern's Oath", color = "green", linestyle = "dashdot")
+plt.legend()
 ## JEDI CODE
 ratios: list = list()
 for i in range(1, MAX_N):
     sub_message = JEDI_CODE[0:i]
     _, _, ratio = huffman(sub_message)
     ratios.append(ratio)
+plt.plot([i/100 for i in ratios], label = "Jedi Code", color = "blue", linestyle = "dashdot")
+plt.legend()
+
+plt.ylabel("compression %")
+plt.xlabel("length of message")
+
+plt.xticks(np.arange(0, 200+1, 25))
+plt.ylim(.4,1)
+plt.show()
